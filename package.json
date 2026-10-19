@@ -8,7 +8,7 @@
     "node": ">=20.19.0"
   },
   "scripts": {
-    "test": "node scripts/check-fixtures.mjs"
+    "test": "node scripts/check-rules.mjs && node scripts/check-fixtures.mjs"
   },
   "dependencies": {
     "@stylexjs/eslint-plugin": "0.19.1",

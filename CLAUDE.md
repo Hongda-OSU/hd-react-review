@@ -13,7 +13,7 @@ rr: a local React / HTML code reviewer, built as a Claude skill plus its own lin
 | Purpose | Command |
 | --- | --- |
 | Install | `pnpm install` |
-| Check both fixtures | `pnpm test` |
+| Check rules, lint config and fixtures agree | `pnpm test` |
 | Lint a project (JSON out) | `node bin/lint.mjs [--changed] [--limit N] <path>` |
 
 ## Rules
@@ -24,8 +24,10 @@ rr: a local React / HTML code reviewer, built as a Claude skill plus its own lin
 - Keep TypeScript below 6.1: typescript-eslint 8 requires `<6.1.0`.
 - Enable only lint rules that map to a rule id (`R01`, `R02`, ...). No `recommended` presets. Every rule in `lint/` carries a `// Rxx` comment.
 - Rule ids are never renumbered or reused. New rules get the next id.
+- `rules/*.md` is the source of truth. `lint/` comments, fixture annotations and the PRD table follow it.
+- Reports are in Chinese; the code, rule files and `SKILL.md` stay English.
 - Always use rr's own ESLint, stylelint and Prettier, never the reviewed project's copy. Only `tsc` prefers the project's own, falling back to rr's.
-- Run `pnpm test` after touching `bin/lint.mjs`, `lint/` or `fixtures/`.
+- Run `pnpm test` after touching `bin/`, `lint/`, `rules/` or `fixtures/`.
 - `fixtures/bad/` is wrong on purpose. Never format or fix it; `bad/src/lib/api.ts` must stay unformatted for R02.
 - Fixture annotations apply to the next code line: `expect-lint: Rxx` (lint must report it), `expect-claude: Rxx` (only Claude can), `expect-none: Rxx` (must not reach the report). Update them whenever a rule changes.
 
@@ -34,7 +36,6 @@ rr: a local React / HTML code reviewer, built as a Claude skill plus its own lin
 - Run rr's ESLint with the reviewed project root as cwd. With `--config`, ESLint 9 matches `files` globs and boundaries patterns against cwd; anything outside it is silently skipped as "outside of base path".
 - A reviewed project's `eslint-disable` comment naming a rule rr does not load fails with "Definition for rule '...' was not found". Drop lint messages with no rule id instead of loading more plugins.
 - `func-style` skips TS overloads but still flags generators, which R01 exempts. Filter that in the R01 exception check.
-- stylelint 16+ writes `-f json` output to stderr, not stdout.
 - `tsc` writes a `.tsbuildinfo` into the reviewed project unless given both `--incremental false` and `--composite false`; a composite config writes it even while rejecting the first flag alone.
 - `jsx-a11y/label-has-associated-control` never flags a label whose child is an `{expression}`; it assumes the expression may hold a control. Dynamic labels are Claude's part of R17.
 - `pnpm-workspace.yaml` denies the `unrs-resolver` build script. Its native binary arrives as an optional dependency; the script is only a fallback rebuild. Don't approve it to silence a warning.
