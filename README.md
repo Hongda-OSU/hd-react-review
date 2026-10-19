@@ -22,7 +22,7 @@ A local code reviewer for React, HTML and CSS: lint catches what can be checked 
 
 - Node.js 20.19+
 - pnpm 12+
-- Claude Code
+- Claude Code, with the `claude` CLI on your PATH for `rr`'s full review
 
 ### Installation
 
@@ -32,6 +32,7 @@ cd hd-react-review
 pnpm install
 mkdir -p ~/.claude/skills
 ln -s "$PWD" ~/.claude/skills/react-review
+ln -s "$PWD/bin/rr.mjs" /opt/homebrew/bin/rr  # or any directory on your PATH
 ```
 
 ## Usage
@@ -44,14 +45,16 @@ review my uncommitted changes
 review src/components, skip personal preferences
 ```
 
-The report is written in Chinese: a summary table, then each finding with its line, reason and a concrete fix.
-
-To see only the lint layer, run it directly; it prints JSON:
+Or from a terminal:
 
 ```bash
-node bin/lint.mjs path/to/project/src
-node bin/lint.mjs --changed path/to/project
+rr src/components              # lint, then Claude
+rr --changed                   # uncommitted changes only
+rr --no-personal src           # skip personal preferences
+rr --lint-only src             # lint only: seconds, no Claude
 ```
+
+The report is written in Chinese: a summary table, then each finding with its line, reason and a concrete fix.
 
 To change how rr reviews, edit `rules/*.md`, or record a veto or downgrade in `prefs.md`. Then run:
 

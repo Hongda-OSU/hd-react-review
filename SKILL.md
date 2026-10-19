@@ -5,7 +5,7 @@ description: Review React, HTML and CSS code against layered rules (consensus / 
 
 # rr: React / HTML code review
 
-`<skill>` below means this skill's base directory. The review is read-only: never edit the reviewed project's files.
+`<skill>` below means this skill's base directory. The review is read-only: never edit the reviewed project's files. When the prompt says `bin/rr.mjs` started the review, follow section 7 instead of sections 2, 5 and 6.
 
 ## 1. Scope
 
@@ -76,3 +76,13 @@ Button.tsx
 ## 6. Preferences
 
 When the user vetoes, downgrades or rewrites a finding, offer to log it. On a yes, append one row to `<skill>/prefs.md` with today's date, the scope (`global` or the project's `package.json` name, never a path), the rule id, the action and the user's reason.
+
+## 7. JSON mode (bin/rr.mjs)
+
+`bin/rr.mjs` already ran the lint layer and put its JSON in the prompt, with personal findings removed when no-personal is true. You have Read, Glob and Grep only.
+
+- Read every file in `scope.files` in full before judging, and list the ones you read in `reviewed`, exactly as they appear in `scope.files`.
+- Do not run `bin/lint.mjs`. Do sections 3 and 4 as usual, but apply only `modify` rows of `prefs.md`; rr applies veto and downgrade itself.
+- Skip R02 entirely; rr reports formatting itself.
+- Return the structured output only. `findings`: every lint finding you keep, with `source: "lint"` and the same `file`, `line` and `ruleId`, plus your own with `source: "claude"`. `dropped`: lint findings an exception removes, with the reason.
+- `file` is relative to the project root, as in the lint JSON. `problem`, `why` and `suggestion` are Chinese, following the wording rules of section 5. Use `confidence: "needs-check"` for 待确认.

@@ -3,6 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
+  "bin": {
+    "rr": "bin/rr.mjs"
+  },
   "packageManager": "pnpm@12.9.1",
   "engines": {
     "node": ">=20.19.0"

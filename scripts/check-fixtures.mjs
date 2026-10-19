@@ -67,6 +67,19 @@ for (const { file, line, ruleId } of cleanReport.findings) {
   problems.push(`clean: unexpected ${ruleId} at ${file}:${line}`);
 }
 
+// bin/rr.mjs --lint-only must render every rule id the lint layer found in bad/.
+const rrArgs = [path.join(RR, 'bin/rr.mjs'), '--lint-only', '--limit', '100', bad];
+const rrOutput = execFileSync(process.execPath, rrArgs, {
+  encoding: 'utf8',
+  env: { ...process.env, NO_COLOR: '1' },
+  stdio: ['ignore', 'pipe', 'pipe'],
+});
+for (const id of new Set(badReport.findings.map((finding) => finding.ruleId))) {
+  if (!rrOutput.includes(`· ${id}]`)) {
+    problems.push(`rr --lint-only: ${id} missing from the report`);
+  }
+}
+
 // The skill reaches rr through ~/.claude/skills/react-review, a symlink. lint.mjs once
 // exited 0 with no output there, so run it through a symlink too.
 const linkDir = mkdtempSync(path.join(tmpdir(), 'rr-link-'));
