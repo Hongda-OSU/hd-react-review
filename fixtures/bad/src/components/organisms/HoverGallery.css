@@ -11,3 +11,14 @@
   background: black;
   color: white;
 }
+
+/* expect-claude: R28 */
+.gallery-animated .gallery-item {
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  50% {
+    transform: translateY(-4px);
+  }
+}
