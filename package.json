@@ -7,6 +7,9 @@
   "engines": {
     "node": ">=20.19.0"
   },
+  "scripts": {
+    "test": "node scripts/check-fixtures.mjs"
+  },
   "dependencies": {
     "@stylexjs/eslint-plugin": "0.19.1",
     "eslint": "9.39.5",
