@@ -56,6 +56,7 @@ rr                             # uncommitted changes: lint, then Claude
 rr src/components              # a whole path
 rr --no-personal src           # skip personal preferences
 rr --lint-only src             # lint only: seconds, no Claude
+rr --help                      # all options
 ```
 
 The report is written in Chinese: a summary table, then each finding with its line, reason and a concrete fix.

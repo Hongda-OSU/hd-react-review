@@ -37,6 +37,15 @@ const fail = (message) => {
   process.exit(2);
 };
 
+const USAGE = `用法：rr [--changed] [--no-personal] [--lint-only] [--limit N] [path ...]
+
+  不带路径        审当前 git 仓库里未提交的改动
+  --changed       只审给定路径里未提交的改动
+  --no-personal   不看个人偏好层（R01、R02、R07）
+  --lint-only     只跑 lint 层，几秒出结果，不调用 Claude
+  --limit N       单次最多审几个文件，默认 20
+  -h, --help      显示这段说明`;
+
 const FINDING_SCHEMA = {
   type: 'object',
   properties: {
@@ -277,16 +286,32 @@ const render = ({ findings, dropped, report, skipped, unread, seconds }) => {
   process.stdout.write(`${out.join('\n')}\n`);
 };
 
+const parseCli = () => {
+  try {
+    return parseArgs({
+      options: {
+        changed: { type: 'boolean', default: false },
+        'no-personal': { type: 'boolean', default: false },
+        'lint-only': { type: 'boolean', default: false },
+        limit: { type: 'string' },
+        help: { type: 'boolean', short: 'h', default: false },
+      },
+      allowPositionals: true,
+    });
+  } catch (error) {
+    // parseArgs throws a TypeError whose stack trace says nothing useful to a user;
+    // its message quotes the offending option.
+    const option = error.message.match(/'([^']+)'/)?.[1];
+    return fail(`${option ? `参数有误：${option}` : error.message}\n\n${USAGE}`);
+  }
+};
+
 const main = () => {
-  const { values, positionals } = parseArgs({
-    options: {
-      changed: { type: 'boolean', default: false },
-      'no-personal': { type: 'boolean', default: false },
-      'lint-only': { type: 'boolean', default: false },
-      limit: { type: 'string' },
-    },
-    allowPositionals: true,
-  });
+  const { values, positionals } = parseCli();
+  if (values.help) {
+    console.log(USAGE);
+    return;
+  }
   const noPersonal = values['no-personal'];
 
   const rules = new Map(readRules().map((rule) => [rule.id, rule]));
