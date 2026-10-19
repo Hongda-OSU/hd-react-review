@@ -1,6 +1,8 @@
+<img src="assets/icon.png" width="128" height="128" alt="rr icon: a pixel-art owl in reading glasses on a pine branch">
+
 # hd-react-review (rr)
 
-A local code reviewer for React, HTML and CSS: lint catches what can be checked mechanically, Claude judges the rest, and every finding says how severe it is and whether it is industry consensus, a project convention or just personal preference.
+A Claude Code skill that reviews React, HTML and CSS against industry standards and my own conventions. Lint catches what can be checked mechanically, Claude judges the rest, and every finding says how severe it is and whether it is industry consensus, a project convention or just personal preference.
 
 https://github.com/user-attachments/assets/9afdce60-eb62-45f5-9157-2de4d25f1b6c
 
