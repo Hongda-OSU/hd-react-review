@@ -22,7 +22,7 @@ A local code reviewer for React, HTML and CSS: lint catches what can be checked 
 
 - Node.js 20.19+
 - pnpm 12+
-- Claude Code, with the `claude` CLI on your PATH for `rr`'s full review
+- Claude Code; `rr`'s full review also needs the `claude` CLI on your PATH (`brew install --cask claude-code`)
 
 ### Installation
 
