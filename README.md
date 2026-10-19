@@ -2,6 +2,8 @@
 
 A local code reviewer for React, HTML and CSS: lint catches what can be checked mechanically, Claude judges the rest, and every finding says how severe it is and whether it is industry consensus, a project convention or just personal preference.
 
+https://github.com/user-attachments/assets/9afdce60-eb62-45f5-9157-2de4d25f1b6c
+
 ## Features
 
 - 29 rules in three layers (consensus, project, personal), each finding tagged with severity, layer and rule id; the personal layer can be switched off per review
