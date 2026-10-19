@@ -1,0 +1,25 @@
+/* expect-claude: R08 */
+@property --angle {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+
+.profile-card {
+  border: 1px solid;
+}
+
+/* expect-lint: R07 */
+.profile_title {
+  font-weight: 600;
+}
+
+/* expect-lint: R07 */
+.profileBody {
+  color: gray;
+}
+
+.profile-card button:focus {
+  /* expect-claude: R18 */
+  outline: none;
+}

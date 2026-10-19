@@ -1,0 +1,8 @@
+{
+  "name": "fixture-bad",
+  "private": true,
+  "dependencies": {
+    "@stylexjs/stylex": "0.19.1",
+    "react": "19.2.0"
+  }
+}

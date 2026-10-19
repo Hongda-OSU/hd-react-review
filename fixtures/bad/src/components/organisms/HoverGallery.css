@@ -1,0 +1,13 @@
+.gallery {
+  display: grid;
+  gap: 8px;
+}
+
+.gallery-item {
+  cursor: pointer;
+}
+
+.gallery-dark {
+  background: black;
+  color: white;
+}

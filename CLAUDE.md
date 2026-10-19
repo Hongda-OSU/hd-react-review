@@ -23,12 +23,16 @@ rr: a local React / HTML code reviewer, built as a Claude skill plus its own lin
 - Enable only lint rules that map to a rule id (`R01`, `R02`, ...). No `recommended` presets. Every rule in `lint/` carries a `// Rxx` comment.
 - Rule ids are never renumbered or reused. New rules get the next id.
 - Always run rr's own `node_modules/.bin/*`, never the reviewed project's copy.
+- `fixtures/bad/` is wrong on purpose. Never format or fix it; `bad/src/lib/api.ts` must stay unformatted for R02.
+- Fixture annotations apply to the next code line: `expect-lint: Rxx` (lint must report it), `expect-claude: Rxx` (only Claude can), `expect-none: Rxx` (must not reach the report). Update them whenever a rule changes.
 
 ## Gotchas
 
 - Run rr's ESLint with the reviewed project root as cwd. With `--config`, ESLint 9 matches `files` globs and boundaries patterns against cwd; anything outside it is silently skipped as "outside of base path".
 - A reviewed project's `eslint-disable` comment naming a rule rr does not load fails with "Definition for rule '...' was not found". Drop lint messages with no rule id instead of loading more plugins.
 - `func-style` skips TS overloads but still flags generators, which R01 exempts. Filter that in the R01 exception check.
+- stylelint 16+ writes `-f json` output to stderr, not stdout.
+- `jsx-a11y/label-has-associated-control` never flags a label whose child is an `{expression}`; it assumes the expression may hold a control. Dynamic labels are Claude's part of R17.
 - `pnpm-workspace.yaml` denies the `unrs-resolver` build script. Its native binary arrives as an optional dependency; the script is only a fallback rebuild. Don't approve it to silence a warning.
 
 ## When unsure
