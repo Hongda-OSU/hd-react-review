@@ -73,12 +73,13 @@ const SCHEMA = {
 };
 
 const NOTES = [
-  [/^R02 off/, 'R02 没有检查：项目有自己的 Prettier 配置'],
+  // Each pattern matches the whole note, so replace() leaves no English behind.
+  [/^R02 off.*$/, 'R02 没有检查：项目有自己的 Prettier 配置'],
   [
     /^tsc: the project has none; used rr's TypeScript (.+)$/,
     'tsc：项目没装 TypeScript，用的是 rr 自带的 $1',
   ],
-  [/^R25 skipped/, 'R25 没有检查：项目没有 tsconfig.json'],
+  [/^R25 skipped.*$/, 'R25 没有检查：项目没有 tsconfig.json'],
 ];
 
 const key = (finding) => `${finding.file}:${finding.line}:${finding.ruleId}`;
