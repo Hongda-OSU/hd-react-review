@@ -4,9 +4,9 @@
 //
 //   node bin/lint.mjs [--changed] [--limit N] [path ...]
 import { execFileSync } from 'node:child_process';
-import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
+import { existsSync, readFileSync, readdirSync, realpathSync, statSync } from 'node:fs';
 import path from 'node:path';
-import { pathToFileURL } from 'node:url';
+import { fileURLToPath } from 'node:url';
 import { parseArgs } from 'node:util';
 
 import { ESLint } from 'eslint';
@@ -367,5 +367,7 @@ const main = async () => {
   process.stdout.write(`${JSON.stringify(report, null, 2)}\n`);
 };
 
-// Imported by scripts/check-rules.mjs for ruleIdsFrom; only run as a CLI.
-if (import.meta.url === pathToFileURL(process.argv[1]).href) await main();
+// Imported by scripts/check-rules.mjs for ruleIdsFrom; only run as a CLI. Compare real paths:
+// the skill is reached through a symlink, but import.meta.url is already resolved.
+if (process.argv[1] && realpathSync(process.argv[1]) === fileURLToPath(import.meta.url))
+  await main();

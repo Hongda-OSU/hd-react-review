@@ -38,6 +38,7 @@ rr: a local React / HTML code reviewer, built as a Claude skill plus its own lin
 - `func-style` skips TS overloads but still flags generators, which R01 exempts. Filter that in the R01 exception check.
 - `tsc` writes a `.tsbuildinfo` into the reviewed project unless given both `--incremental false` and `--composite false`; a composite config writes it even while rejecting the first flag alone.
 - `jsx-a11y/label-has-associated-control` never flags a label whose child is an `{expression}`; it assumes the expression may hold a control. Dynamic labels are Claude's part of R17.
+- The skill runs `bin/lint.mjs` through the `~/.claude/skills/react-review` symlink, while `import.meta.url` is already resolved. Compare real paths; `pnpm test` covers this.
 - `pnpm-workspace.yaml` denies the `unrs-resolver` build script. Its native binary arrives as an optional dependency; the script is only a fallback rebuild. Don't approve it to silence a warning.
 
 ## When unsure

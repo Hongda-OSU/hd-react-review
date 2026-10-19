@@ -1,7 +1,8 @@
 // Run bin/lint.mjs on both fixtures and compare with their annotations:
 // bad/ must match its expect-lint lines exactly, clean/ must have no findings at all.
 import { execFileSync } from 'node:child_process';
-import { readFileSync, readdirSync, statSync } from 'node:fs';
+import { mkdtempSync, readFileSync, readdirSync, rmSync, statSync, symlinkSync } from 'node:fs';
+import { tmpdir } from 'node:os';
 import path from 'node:path';
 
 const RR = path.resolve(import.meta.dirname, '..');
@@ -64,6 +65,21 @@ for (const [key, ids] of actual) {
 const cleanReport = lint(path.join(RR, 'fixtures/clean'));
 for (const { file, line, ruleId } of cleanReport.findings) {
   problems.push(`clean: unexpected ${ruleId} at ${file}:${line}`);
+}
+
+// The skill reaches rr through ~/.claude/skills/react-review, a symlink. lint.mjs once
+// exited 0 with no output there, so run it through a symlink too.
+const linkDir = mkdtempSync(path.join(tmpdir(), 'rr-link-'));
+try {
+  const link = path.join(linkDir, 'react-review');
+  symlinkSync(RR, link);
+  const args = [path.join(link, 'bin/lint.mjs'), 'fixtures/clean'];
+  const output = execFileSync(process.execPath, args, { cwd: RR, encoding: 'utf8' });
+  if (!output.trim().startsWith('{')) {
+    problems.push('lint.mjs printed no JSON when run through a symlink');
+  }
+} finally {
+  rmSync(linkDir, { recursive: true, force: true });
 }
 
 for (const [name, report] of [
