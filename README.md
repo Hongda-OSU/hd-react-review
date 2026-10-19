@@ -61,7 +61,7 @@ rr --help                      # all options
 
 The report is written in Chinese: a summary table, then each finding with its line, reason and a concrete fix.
 
-To change how rr reviews, edit `rules/*.md`, or record a veto or downgrade in `prefs.md`. Then run:
+To change how rr reviews, edit `rules/*.md`, or record a veto, downgrade or rewrite in `prefs.md`. Then run:
 
 ```bash
 pnpm test
