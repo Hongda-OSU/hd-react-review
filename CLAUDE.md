@@ -28,6 +28,7 @@ rr: a local React / HTML code reviewer, built as a Claude skill plus its own lin
 - Reports are in Chinese; the code, rule files and `SKILL.md` stay English.
 - Always use rr's own ESLint, stylelint and Prettier, never the reviewed project's copy. Only `tsc` prefers the project's own, falling back to rr's.
 - Run `pnpm test` after touching `bin/`, `lint/`, `rules/` or `fixtures/`.
+- Update `README.md` in the same commit as any command or install change. It stays English only.
 - `fixtures/bad/` is wrong on purpose. Never format or fix it; `bad/src/lib/api.ts` must stay unformatted for R02.
 - Fixture annotations apply to the next code line: `expect-lint: Rxx` (lint must report it), `expect-claude: Rxx` (only Claude can), `expect-none: Rxx` (must not reach the report). Update them whenever a rule changes.
 
