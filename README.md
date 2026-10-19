@@ -48,8 +48,8 @@ review src/components, skip personal preferences
 Or from a terminal:
 
 ```bash
-rr src/components              # lint, then Claude
-rr --changed                   # uncommitted changes only
+rr                             # uncommitted changes: lint, then Claude
+rr src/components              # a whole path
 rr --no-personal src           # skip personal preferences
 rr --lint-only src             # lint only: seconds, no Claude
 ```

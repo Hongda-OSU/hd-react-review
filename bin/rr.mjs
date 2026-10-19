@@ -3,6 +3,8 @@
 // and prints one Chinese report.
 //
 //   rr [--changed] [--no-personal] [--lint-only] [--limit N] [path ...]
+//
+// Without a path, rr reviews uncommitted changes in the current directory.
 import { spawnSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
@@ -98,15 +100,18 @@ const width = (text) =>
   [...text].reduce((sum, ch) => sum + (ch.codePointAt(0) > 0x2e80 ? 2 : 1), 0);
 const pad = (text, size) => text + ' '.repeat(Math.max(0, size - width(text)));
 
-const runLint = (values, positionals) => {
+const runLint = (values, positionals, changed) => {
   const args = [LINT];
-  if (values.changed) args.push('--changed');
+  if (changed) args.push('--changed');
   if (values.limit) args.push('--limit', values.limit);
   const result = spawnSync(process.execPath, [...args, ...positionals], {
     encoding: 'utf8',
     maxBuffer: 64 * 1024 * 1024,
   });
   if (result.status === 2) {
+    if (!positionals.length && result.stderr.includes('needs a git repository')) {
+      fail('不带路径时只审未提交的改动，但当前目录不在 git 仓库里。请指定要审的路径，例如 rr src');
+    }
     process.stderr.write(result.stderr);
     process.exit(2);
   }
@@ -285,9 +290,10 @@ const main = () => {
   const noPersonal = values['no-personal'];
 
   const rules = new Map(readRules().map((rule) => [rule.id, rule]));
-  const report = runLint(values, positionals);
+  const changed = values.changed || positionals.length === 0;
+  const report = runLint(values, positionals, changed);
   if (!report.scope.files.length) {
-    console.log(values.changed ? '没有未提交的改动需要审。' : '没有可以审的文件。');
+    console.log(changed ? '没有未提交的改动需要审。' : '没有可以审的文件。');
     return;
   }
 
