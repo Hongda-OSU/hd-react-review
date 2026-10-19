@@ -26,6 +26,9 @@ rr: a local React / HTML code reviewer, built as a Claude skill plus its own lin
 
 ## Gotchas
 
+- Run rr's ESLint with the reviewed project root as cwd. With `--config`, ESLint 9 matches `files` globs and boundaries patterns against cwd; anything outside it is silently skipped as "outside of base path".
+- A reviewed project's `eslint-disable` comment naming a rule rr does not load fails with "Definition for rule '...' was not found". Drop lint messages with no rule id instead of loading more plugins.
+- `func-style` skips TS overloads but still flags generators, which R01 exempts. Filter that in the R01 exception check.
 - `pnpm-workspace.yaml` denies the `unrs-resolver` build script. Its native binary arrives as an optional dependency; the script is only a fallback rebuild. Don't approve it to silence a warning.
 
 ## When unsure
