@@ -4,12 +4,11 @@ import { readFileSync, readdirSync, statSync } from 'node:fs';
 import path from 'node:path';
 
 import { TSC_RULE, ruleIdsFrom } from '../bin/lint.mjs';
-
-const RR = path.resolve(import.meta.dirname, '..');
+import { LAYER_LABEL, RR, SEVERITIES, list, readPrefs, readRules } from '../lib/rules.mjs';
 
 const ENUMS = {
-  layer: ['consensus', 'project', 'personal'],
-  severity: ['must', 'should', 'suggest'],
+  layer: Object.keys(LAYER_LABEL),
+  severity: SEVERITIES,
   checker: ['lint', 'claude', 'both'],
 };
 // Keys of the `project` object printed by bin/lint.mjs.
@@ -19,22 +18,18 @@ const REQUIRED = ['layer', 'severity', 'checker', 'why', 'added'];
 const problems = [];
 const rules = new Map();
 
-for (const name of readdirSync(path.join(RR, 'rules'))) {
-  let current = null;
-  for (const line of readFileSync(path.join(RR, 'rules', name), 'utf8').split('\n')) {
-    const heading = line.match(/^## (R\d{2}) (.+)$/);
-    if (heading) {
-      if (rules.has(heading[1])) problems.push(`${heading[1]} is defined twice`);
-      current = { id: heading[1], file: name, fields: {} };
-      rules.set(current.id, current);
-      continue;
-    }
-    const field = line.match(/^- (\w+): (.+)$/);
-    if (field && current) current.fields[field[1]] = field[2];
-  }
+for (const rule of readRules()) {
+  if (rules.has(rule.id)) problems.push(`${rule.id} is defined twice`);
+  rules.set(rule.id, rule);
 }
 
-const list = (value) => (value ? value.split(',').map((item) => item.trim()) : []);
+for (const row of readPrefs()) {
+  if (!rules.has(row.ruleId)) problems.push(`prefs.md: unknown rule ${row.ruleId}`);
+  if (!['veto', 'downgrade', 'modify'].includes(row.action)) {
+    problems.push(`prefs.md: action "${row.action}" is not veto, downgrade or modify`);
+  }
+  if (row.scope.includes('/')) problems.push(`prefs.md: scope "${row.scope}" looks like a path`);
+}
 
 for (const { id, fields } of rules.values()) {
   for (const key of REQUIRED) if (!fields[key]) problems.push(`${id}: missing ${key}`);
