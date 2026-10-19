@@ -18,6 +18,7 @@ description: Review React, HTML and CSS code against layered rules (consensus / 
 Run `node <skill>/bin/lint.mjs [--changed] <path>` and parse the JSON on stdout.
 
 - Exit code 2 prints the reason on stderr. When it is the file limit, propose batches by directory and ask; never review a silent subset.
+- Any other failure, including exit 0 with no JSON: stop and tell the user the lint layer failed, with its stderr. Do not review without it or judge lint-only rules by eye.
 - `project`: detected flags; a rule whose `requires` names a flag that is false is skipped.
 - `findings`: lint results, already mapped to rule ids and deduplicated. They go into the report unless an exception below removes them.
 - `scope.changedLines` (only with `--changed`): `"all"` or `[start, end]` ranges per file. Your own findings must sit on those lines, except R05 and R22, which span files.
