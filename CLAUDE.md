@@ -14,6 +14,7 @@ rr: a local React / HTML code reviewer, built as a Claude skill plus its own lin
 | --- | --- |
 | Install | `pnpm install` |
 | Check rules, lint config and fixtures agree | `pnpm test` |
+| Format rr's own code (fixtures and Markdown are ignored) | `npx prettier --write .` |
 | Review from a terminal | `rr [--changed] [--no-personal] [--lint-only] <path>` |
 | Lint layer only, JSON out | `node bin/lint.mjs [--changed] [--limit N] <path>` |
 

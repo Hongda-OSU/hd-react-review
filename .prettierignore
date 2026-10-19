@@ -1,0 +1,5 @@
+# Deliberately unformatted: fixtures/bad is test input for R02.
+fixtures/
+# Hand-written tables and wrapping stay as they are.
+*.md
+pnpm-lock.yaml
