@@ -14,7 +14,9 @@ import tseslint from 'typescript-eslint';
 
 const require = createRequire(import.meta.url);
 
-const prettierOptions = JSON.parse(readFileSync(new URL('./prettier.json', import.meta.url), 'utf8'));
+const prettierOptions = JSON.parse(
+  readFileSync(new URL('./prettier.json', import.meta.url), 'utf8'),
+);
 
 // eslint-module-utils loads resolvers by name from the linted file's location, where the
 // reviewed project may not have it. An absolute path always resolves to rr's own copy.
