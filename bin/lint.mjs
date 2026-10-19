@@ -6,6 +6,7 @@
 import { execFileSync } from 'node:child_process';
 import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
 import path from 'node:path';
+import { pathToFileURL } from 'node:url';
 import { parseArgs } from 'node:util';
 
 import { ESLint } from 'eslint';
@@ -38,7 +39,7 @@ const PRETTIER_CONFIGS = [
 ];
 
 // tsc has no config file to carry a `// Rxx` comment, so its id lives here.
-const TSC_RULE = 'R25';
+export const TSC_RULE = 'R25';
 // Findings that a change elsewhere can cause on an unchanged line; --changed keeps them.
 const CROSS_FILE_RULES = new Set(['R05']);
 
@@ -48,7 +49,7 @@ const fail = (message) => {
 };
 
 // The `// Rxx` comments in a lint config are the mapping from tool rule to rule id.
-const ruleIdsFrom = (configFile) => {
+export const ruleIdsFrom = (configFile) => {
   const ids = {};
   let current = null;
   for (const line of readFileSync(configFile, 'utf8').split('\n')) {
@@ -98,10 +99,10 @@ const detectProject = (root) => {
   return {
     typescript: existsSync(path.join(root, 'tsconfig.json')),
     stylex: '@stylexjs/stylex' in deps,
-    cssModules: walk(sourceDir).some((file) => file.endsWith('.module.css')),
-    reactCompiler: 'babel-plugin-react-compiler' in deps,
-    atomicDesign: existsSync(path.join(root, 'src/components/atoms')),
-    prettierConfig:
+    'css-modules': walk(sourceDir).some((file) => file.endsWith('.module.css')),
+    'react-compiler': 'babel-plugin-react-compiler' in deps,
+    'atomic-design': existsSync(path.join(root, 'src/components/atoms')),
+    'prettier-config':
       'prettier' in pkg || PRETTIER_CONFIGS.some((name) => existsSync(path.join(root, name))),
   };
 };
@@ -164,11 +165,25 @@ const collectChanged = (root, targets) => {
   return files;
 };
 
+// A null line set (new file) becomes "all"; otherwise sorted [start, end] pairs.
+const toRanges = (lines) => {
+  if (lines === null) return 'all';
+  const ranges = [];
+  for (const n of [...lines].sort((a, b) => a - b)) {
+    const last = ranges.at(-1);
+    if (last && n === last[1] + 1) last[1] = n;
+    else ranges.push([n, n]);
+  }
+  return ranges;
+};
+
 const runEslint = async (root, files, project, ruleIds, out) => {
   const eslint = new ESLint({
     cwd: root,
     overrideConfigFile: ESLINT_CONFIG,
-    overrideConfig: project.prettierConfig ? { rules: { 'prettier/prettier': 'off' } } : undefined,
+    overrideConfig: project['prettier-config']
+      ? { rules: { 'prettier/prettier': 'off' } }
+      : undefined,
     errorOnUnmatchedPattern: false,
     warnIgnored: false,
   });
@@ -303,7 +318,8 @@ const main = async () => {
 
   const project = detectProject(root);
   const out = { raw: [], parseErrors: [], notes: [] };
-  if (project.prettierConfig) out.notes.push('R02 off: the project has its own Prettier config');
+  if (project['prettier-config'])
+    out.notes.push('R02 off: the project has its own Prettier config');
 
   const scripts = files.filter((f) => SCRIPT_FILE.test(f));
   const styles = files.filter((f) => STYLE_FILE.test(f));
@@ -332,9 +348,16 @@ const main = async () => {
       (a, b) => a.file.localeCompare(b.file) || a.line - b.line || a.ruleId.localeCompare(b.ruleId),
     );
 
+  const scope = { mode: changed ? 'changed' : 'path', files };
+  // The Claude layer follows the same changed-lines rule as the filter above.
+  if (changed)
+    scope.changedLines = Object.fromEntries(
+      files.map((f) => [f, toRanges(changed.get(path.join(root, f)))]),
+    );
+
   const report = {
     root,
-    scope: { mode: changed ? 'changed' : 'path', files },
+    scope,
     project,
     findings: sorted,
     parseErrors: out.parseErrors,
@@ -344,4 +367,5 @@ const main = async () => {
   process.stdout.write(`${JSON.stringify(report, null, 2)}\n`);
 };
 
-await main();
+// Imported by scripts/check-rules.mjs for ruleIdsFrom; only run as a CLI.
+if (import.meta.url === pathToFileURL(process.argv[1]).href) await main();
