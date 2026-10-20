@@ -109,3 +109,12 @@ Judge: follow each object or array dependency to where it is created: inline in 
 - added: 2026-10-18
 
 Judge: flag effects that start async work (`fetch(...).then`, `await`, `setTimeout`, a library's `ready` or `load` event) without a cancelled flag, `AbortController` or equivalent, and cleanups that cannot reach resources registered in the async phase.
+
+## R30 Long static data lives in its own module
+- layer: personal
+- severity: suggest
+- checker: claude
+- why: A component or entry file should open with what it renders and how it is used. A long list of URLs, copy or config pushes that below the fold, and in a sandbox or embedded demo the entry file is the first thing visitors read.
+- added: 2026-10-19
+
+Judge: flag a module-level literal of static data (array, object or long string) that runs to about 15 lines or more, or fills about half of a component or entry file. Suggest a sibling module named after the data, such as `galleryItems.js`, imported where it is used. Short constants, lookup tables the component's logic depends on, and data built by code (`Array.from(...)`) stay where they are. A file whose only job is the data is already fine.

@@ -41,7 +41,7 @@ const USAGE = `用法：rr [--changed] [--no-personal] [--lint-only] [--limit N]
 
   不带路径        审当前 git 仓库里未提交的改动
   --changed       只审给定路径里未提交的改动
-  --no-personal   不看个人偏好层（R01、R02、R07）
+  --no-personal   不看个人偏好层（R01、R02、R07、R30）
   --lint-only     只跑 lint 层，几秒出结果，不调用 Claude
   --limit N       单次最多审几个文件，默认 20
   -h, --help      显示这段说明`;

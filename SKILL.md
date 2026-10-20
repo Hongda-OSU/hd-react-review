@@ -11,7 +11,7 @@ description: Review React, HTML and CSS code against layered rules (consensus / 
 
 - A file or directory: review that path.
 - "改动", "changed", "这次改的" or no path at all: add `--changed` (uncommitted changes, including untracked files), with the path if one was given.
-- "不看个人偏好", "--no-personal": drop every `personal` rule (R01, R02, R07), from lint findings too.
+- "不看个人偏好", "--no-personal": drop every `personal` rule (R01, R02, R07, R30), from lint findings too.
 
 ## 2. Lint layer
 

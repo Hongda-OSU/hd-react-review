@@ -8,7 +8,7 @@ https://github.com/user-attachments/assets/9afdce60-eb62-45f5-9157-2de4d25f1b6c
 
 ## Features
 
-- 29 rules in three layers (consensus, project, personal), each finding tagged with severity, layer and rule id; the personal layer can be switched off per review
+- 30 rules in three layers (consensus, project, personal), each finding tagged with severity, layer and rule id; the personal layer can be switched off per review
 - Deterministic first: ESLint, stylelint, Prettier and `tsc` run before Claude, and Claude only reviews what they cannot, such as effect misuse, state placement, keyboard access and leaked secrets
 - Nothing to install in the reviewed project, and nothing written to it; rr brings its own toolchain
 - Review a file, a directory, or only your uncommitted changes
